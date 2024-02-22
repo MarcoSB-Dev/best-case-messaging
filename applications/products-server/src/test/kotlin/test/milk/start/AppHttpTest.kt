@@ -55,6 +55,7 @@ class AppHttpTest {
         with(engine) {
             with(handleRequest(HttpMethod.Get, "/")) {
                 val content = response.content!!
+                println("Response content: $content")
                 assertTrue(content.contains("81"), "Expected to find 81 in '$content'")
             }
         }
@@ -72,6 +73,7 @@ class AppHttpTest {
                             setBody(mapper.writeValueAsString(PurchaseInfo(105442, "milk", 1)))
                         }) {
                             assertEquals(201, response.status()?.value)
+                            println("Purchase made. Response status: ${response.status()?.value}")
                         }
                     }
                 }

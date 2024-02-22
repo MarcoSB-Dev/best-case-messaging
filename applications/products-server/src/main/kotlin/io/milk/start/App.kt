@@ -57,7 +57,7 @@ fun Application.module(jdbcUrl: String, username: String, password: String) {
                 purchase.id
             )
 
-            productService.update(purchase) // TODO - DIRTY READS - Replace with decrementBy. Why is using update problematic?
+            productService.decrementBy(purchase) // TODO DONE - DIRTY READS - Replace with decrementBy. Why is using update problematic?
 
             call.respond(HttpStatusCode.Created)
         }
@@ -73,10 +73,21 @@ fun Application.module(jdbcUrl: String, username: String, password: String) {
         autoAck = true,
     ).start()
 
-    // TODO - MESSAGING -
+    // TODO DONE- MESSAGING -
     //  set up the rabbit configuration for your safer queue and
     //  start the rabbit listener with the safer product update handler **with manual acknowledgement**
     //  this looks similar to the above invocation
+
+
+// Set up the rabbit configuration for your safer queue and
+// start the rabbit listener with the safer product update handler with manual acknowledgement
+    BasicRabbitConfiguration(exchange = "products-exchange", queue = "safer-products", routingKey = "safer").setUp()
+    BasicRabbitListener(
+            queue = "safer-products",
+            delivery = SaferProductUpdateHandler(productService), // Assuming you have a SaferProductUpdateHandler class
+            cancel = ProductUpdateCancelHandler(),
+            autoAck = false, // Manual acknowledgement
+    ).start()
 
 }
 

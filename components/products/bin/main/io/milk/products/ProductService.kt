@@ -18,6 +18,12 @@ class ProductService(private val dataGateway: ProductDataGateway) {
     }
 
     fun decrementBy(purchase: PurchaseInfo) {
-        // TODO - DIRTY READS - Implement the decrementBy function.
+        val record = dataGateway.findBy(purchase.id)!!
+        if (record.quantity >= purchase.amount) {
+            record.quantity -= purchase.amount
+            dataGateway.update(record)
+        } else {
+            throw IllegalArgumentException("Purchase amount exceeds available quantity")
+        }
     }
 }
