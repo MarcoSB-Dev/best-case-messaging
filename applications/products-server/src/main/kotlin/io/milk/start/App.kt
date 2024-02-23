@@ -20,6 +20,7 @@ import io.milk.rabbitmq.BasicRabbitConfiguration
 import io.milk.rabbitmq.BasicRabbitListener
 import org.slf4j.LoggerFactory
 import java.util.*
+import io.github.cdimascio.dotenv.dotenv
 
 fun Application.module(jdbcUrl: String, username: String, password: String) {
     val logger = LoggerFactory.getLogger(this.javaClass)
@@ -92,11 +93,12 @@ fun Application.module(jdbcUrl: String, username: String, password: String) {
 }
 
 fun main() {
+//    val dotenv = dotenv()
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-    val port = System.getenv("PORT")?.toInt() ?: 8081
-    val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
-    val username = System.getenv("JDBC_DATABASE_USERNAME")
-    val password = System.getenv("JDBC_DATABASE_USERNAME")
+    val port = 8081
+    val jdbcUrl = "jdbc:postgresql://localhost:5432/milk_development"
+    val username = "milk"
+    val password = "milk"
 
     embeddedServer(Jetty, port, module = { module(jdbcUrl, username, password) }).start()
 }

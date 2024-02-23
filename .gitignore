@@ -8,3 +8,4 @@ out
 .DS_Store
 .docker-data
 README.md
+.env
