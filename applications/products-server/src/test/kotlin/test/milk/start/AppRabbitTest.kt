@@ -105,7 +105,6 @@ class AppRabbitTest {
     fun testBestCase() {
         makePurchases(PurchaseInfo(105443, "bacon", 1), routingKey = "safer")
         // TODO DONE - MESSAGING -
-        makePurchases(PurchaseInfo(105443, "bacon", 1), routingKey = "safer")
         // Uncomment the below after introducing the safer product update handler with manual acknowledgement
         testSupport.waitForConsumers("safer-products")
 
@@ -118,7 +117,7 @@ class AppRabbitTest {
         }
     }
 
-    ///
+
 
     private fun makePurchase(purchase: PurchaseInfo, routingKey: String) {
         val factory = ConnectionFactory().apply { useNio() }
