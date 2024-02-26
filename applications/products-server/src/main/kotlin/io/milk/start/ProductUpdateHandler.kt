@@ -29,6 +29,6 @@ class ProductUpdateHandler(private val service: ProductService) : ChannelDeliver
             purchase.amount,
             purchase.id
         )
-        service.decrementBy(purchase) // TODO DONE - MESSAGING - replace with decrementBy - Done
+        service.decrementBy(purchase) // TODO - MESSAGING - replace with decrementBy
     }
 }

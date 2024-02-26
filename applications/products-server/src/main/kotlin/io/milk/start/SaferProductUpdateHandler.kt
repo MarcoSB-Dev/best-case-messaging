@@ -32,16 +32,18 @@ class SaferProductUpdateHandler(private val service: ProductService) : ChannelDe
 
         try {
             service.decrementBy(purchase)
-
-            // TODO  DONE- MESSAGING - can we prevent a failure here?
+            // TODO - MESSAGING - can we prevent a failure here?
             //  randomly throw an exception for bacon
             //  ensure the testBestCase test passes
             randomlyThrowAnExceptionForBacon(purchase.name)
-            channel!!.basicAck(message.envelope.deliveryTag, true)
+            channel!!.basicAck(message.envelope.deliveryTag, false)
+
+
 
         } catch (e: Exception) {
             e.printStack()
             channel!!.basicReject(message.envelope.deliveryTag, true)
+
         }
     }
 

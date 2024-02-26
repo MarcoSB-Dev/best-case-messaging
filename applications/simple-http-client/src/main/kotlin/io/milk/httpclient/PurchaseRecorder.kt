@@ -9,9 +9,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.slf4j.LoggerFactory
 
 class PurchaseRecorder(
-        private val httpClient: OkHttpClient,
-        private val urlString: String,
-        override val name: String = "sales-worker"
+    private val httpClient: OkHttpClient,
+    private val urlString: String,
+    override val name: String = "sales-worker"
 ) : Worker<PurchaseTask> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
@@ -28,10 +28,10 @@ class PurchaseRecorder(
             httpClient.newCall(ok).execute().close()
         } catch (e: Exception) {
             logger.error(
-                    "shoot, failed to decrement the {} quantity by {} for product_id={}",
-                    task.name,
-                    task.amount,
-                    task.id
+                "shoot, failed to decrement the {} quantity by {} for product_id={}",
+                task.name,
+                task.amount,
+                task.id
             )
             e.printStackTrace()
         }

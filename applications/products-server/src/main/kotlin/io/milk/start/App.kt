@@ -20,7 +20,6 @@ import io.milk.rabbitmq.BasicRabbitConfiguration
 import io.milk.rabbitmq.BasicRabbitListener
 import org.slf4j.LoggerFactory
 import java.util.*
-import io.github.cdimascio.dotenv.dotenv
 
 fun Application.module(jdbcUrl: String, username: String, password: String) {
     val logger = LoggerFactory.getLogger(this.javaClass)
@@ -58,7 +57,7 @@ fun Application.module(jdbcUrl: String, username: String, password: String) {
                 purchase.id
             )
 
-            productService.decrementBy(purchase) // TODO DONE - DIRTY READS - Replace with decrementBy. Why is using update problematic?
+            productService.decrementBy(purchase) // DIRTY READS - Replace with decrementBy. Why is using update problematic?
 
             call.respond(HttpStatusCode.Created)
         }
@@ -74,31 +73,28 @@ fun Application.module(jdbcUrl: String, username: String, password: String) {
         autoAck = true,
     ).start()
 
-    // TODO DONE- MESSAGING -
+    // TODO - MESSAGING -
     //  set up the rabbit configuration for your safer queue and
     //  start the rabbit listener with the safer product update handler **with manual acknowledgement**
     //  this looks similar to the above invocation
 
 
-// Set up the rabbit configuration for your safer queue and
-// start the rabbit listener with the safer product update handler with manual acknowledgement
     BasicRabbitConfiguration(exchange = "products-exchange", queue = "safer-products", routingKey = "safer").setUp()
     BasicRabbitListener(
-            queue = "safer-products",
-            delivery = SaferProductUpdateHandler(productService), // Assuming you have a SaferProductUpdateHandler class
-            cancel = ProductUpdateCancelHandler(),
-            autoAck = false, // Manual acknowledgement
+        queue = "safer-products",
+        delivery = ProductUpdateHandler(productService),
+        cancel = ProductUpdateCancelHandler(),
+        autoAck = false,
     ).start()
 
 }
 
 fun main() {
-//    val dotenv = dotenv()
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-    val port = 8081
-    val jdbcUrl = "jdbc:postgresql://localhost:5432/milk_development"
-    val username = "milk"
-    val password = "milk"
+    val port = System.getenv("PORT")?.toInt() ?: 8081
+    val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
+    val username = System.getenv("JDBC_DATABASE_USERNAME")
+    val password = System.getenv("JDBC_DATABASE_USERNAME")
 
     embeddedServer(Jetty, port, module = { module(jdbcUrl, username, password) }).start()
 }
